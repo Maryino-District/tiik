@@ -21,6 +21,15 @@ data object SignUpDestination : TiikDestination {
     override val route = "sign_up"
 }
 
+data object ForgotPasswordDestination : TiikDestination {
+    override val route = "forgot_password/{email}"
+
+    fun createRoute(email: String): String {
+        val routeEmail = if (email.isBlank()) "_" else email
+        return "forgot_password/$routeEmail"
+    }
+}
+
 data object BlocksDestination : TiikTopLevelDestination {
     override val route = "blocks"
     override val label = "Blocks"
@@ -59,5 +68,6 @@ val routesWithoutNav = setOf(
     OnboardingDestination.route,
     AuthDestination.route,
     SignUpDestination.route,
+    ForgotPasswordDestination.route,
     AddBlockDestination.route,
 )

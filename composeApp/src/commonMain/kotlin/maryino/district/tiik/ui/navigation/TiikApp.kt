@@ -19,6 +19,7 @@ import maryino.district.tiik.ui.features.addblock.AddBlockScreen
 import maryino.district.tiik.ui.features.addblock.FriendUser
 import maryino.district.tiik.ui.features.addblock.InstalledApp
 import maryino.district.tiik.ui.features.auth.AuthScreen
+import maryino.district.tiik.ui.features.auth.ForgotPasswordScreen
 import maryino.district.tiik.ui.features.auth.SignUpEmailCheckResult
 import maryino.district.tiik.ui.features.auth.SignUpScreen
 import maryino.district.tiik.ui.features.blocks.BlockItem
@@ -92,13 +93,13 @@ fun TiikApp(
                                 popUpTo(AuthDestination.route) { inclusive = true }
                             }
                         },
-                        onSignUp = { _, _ ->
-                            navController.navigate(BlocksDestination.route) {
-                                popUpTo(AuthDestination.route) { inclusive = true }
-                            }
+                        onSignUpClick = {
+                            navController.navigate(SignUpDestination.route)
                         },
                         onGoogleAuth = {},
-                        onForgotPassword = {},
+                        onForgotPassword = { email ->
+                            navController.navigate(ForgotPasswordDestination.createRoute(email))
+                        },
                     )
                 }
 
@@ -109,7 +110,9 @@ fun TiikApp(
                                 popUpTo(SignUpDestination.route) { inclusive = true }
                             }
                         },
-                        onForgotPassword = {},
+                        onForgotPassword = { email ->
+                            navController.navigate(ForgotPasswordDestination.createRoute(email))
+                        },
                         checkEmailAvailability = { email ->
                             if (email == "existing@tiik.app") {
                                 SignUpEmailCheckResult.AlreadyExists
@@ -117,6 +120,19 @@ fun TiikApp(
                                 SignUpEmailCheckResult.Available
                             }
                         },
+                    )
+                }
+
+                composable(ForgotPasswordDestination.route) { backStackEntry ->
+                    val initialEmail = backStackEntry.arguments
+                        ?.getString("email")
+                        ?.takeUnless { it == "_" }
+                        .orEmpty()
+
+                    ForgotPasswordScreen(
+                        initialEmail = initialEmail,
+                        onBackToSignIn = { navController.popBackStack() },
+                        requestPasswordReset = {},
                     )
                 }
 

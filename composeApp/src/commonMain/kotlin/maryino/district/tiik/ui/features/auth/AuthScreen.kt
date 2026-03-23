@@ -27,22 +27,21 @@ import maryino.district.tiik.ui.theme.*
 @Composable
 fun AuthScreen(
     onSignIn: (email: String, password: String) -> Unit,
-    onSignUp: (email: String, password: String) -> Unit,
+    onSignUpClick: () -> Unit,
     onGoogleAuth: () -> Unit,
-    onForgotPassword: () -> Unit,
+    onForgotPassword: (email: String) -> Unit,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
     authViewModel: AuthViewModel = viewModel { AuthViewModel() },
 ) {
     val state by authViewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(authViewModel, onSignIn, onSignUp, onGoogleAuth, onForgotPassword) {
+    LaunchedEffect(authViewModel, onSignIn, onGoogleAuth, onForgotPassword) {
         authViewModel.effects.collectLatest { effect ->
             when (effect) {
                 is AuthEffect.SignIn -> onSignIn(effect.email, effect.password)
-                is AuthEffect.SignUp -> onSignUp(effect.email, effect.password)
                 AuthEffect.GoogleAuth -> onGoogleAuth()
-                AuthEffect.ForgotPassword -> onForgotPassword()
+                is AuthEffect.ForgotPassword -> onForgotPassword(effect.email)
             }
         }
     }
@@ -50,6 +49,7 @@ fun AuthScreen(
     AuthScreenContent(
         state = state,
         onIntent = authViewModel::onIntent,
+        onSignUpClick = onSignUpClick,
         modifier = modifier,
         isLoading = isLoading,
     )
@@ -59,6 +59,7 @@ fun AuthScreen(
 private fun AuthScreenContent(
     state: AuthState,
     onIntent: (AuthIntent) -> Unit,
+    onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
 ) {
@@ -78,7 +79,7 @@ private fun AuthScreenContent(
         Spacer(Modifier.height(Spacing.lg))
 
         EyebrowText(
-            text = if (state.isLoginMode) "Welcome back" else "Create account",
+            text = "Welcome back",
             modifier = Modifier.align(Alignment.CenterHorizontally),
         )
 
@@ -103,23 +104,20 @@ private fun AuthScreenContent(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        if (state.isLoginMode) {
-            Spacer(Modifier.height(Spacing.sm))
-            Text(
-                text = "Forgot password?",
-                style = MaterialTheme.typography.bodySmall,
-                color = TiikColors.Ink3,
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .clickable { onIntent(AuthIntent.ForgotPasswordClicked) },
-            )
-        }
+        Spacer(Modifier.height(Spacing.sm))
+        Text(
+            text = "Forgot password?",
+            style = MaterialTheme.typography.bodySmall,
+            color = TiikColors.Ink3,
+            modifier = Modifier
+                .align(Alignment.End)
+                .clickable { onIntent(AuthIntent.ForgotPasswordClicked) },
+        )
 
         Spacer(Modifier.height(Spacing.xl))
 
-        // ── Primary CTA ───────────────────────────────────────
         TiikButton(
-            text = if (state.isLoginMode) "Sign in" else "Create account",
+            text = "Sign in",
             onClick = { onIntent(AuthIntent.SubmitClicked) },
             enabled = state.isSubmitEnabled && !isLoading,
             modifier = Modifier.fillMaxWidth(),
@@ -149,11 +147,10 @@ private fun AuthScreenContent(
 
         Spacer(Modifier.weight(1f))
 
-        // ── Toggle login / register ───────────────────────────
         val toggleText = buildAnnotatedString {
-            append(if (state.isLoginMode) "No account? " else "Already have one? ")
+            append("No account? ")
             withStyle(SpanStyle(color = TiikColors.Ink, fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)) {
-                append(if (state.isLoginMode) "Sign up" else "Sign in")
+                append("Sign up")
             }
         }
         Text(
@@ -162,7 +159,7 @@ private fun AuthScreenContent(
             color = TiikColors.Ink3,
             modifier = Modifier
                 .padding(bottom = Spacing.x3l)
-                .clickable { onIntent(AuthIntent.ToggleModeClicked) },
+                .clickable(onClick = onSignUpClick),
         )
     }
 }
@@ -207,7 +204,7 @@ private fun AuthScreenPreview() {
     TiikScreenPreview {
         AuthScreen(
             onSignIn = { _, _ -> },
-            onSignUp = { _, _ -> },
+            onSignUpClick = {},
             onGoogleAuth = {},
             onForgotPassword = {},
         )

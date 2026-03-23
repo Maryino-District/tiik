@@ -31,12 +31,6 @@ class AuthViewModel : ViewModel() {
                 }
             }
 
-            AuthIntent.ToggleModeClicked -> {
-                _uiState.update { currentState ->
-                    currentState.copy(isLoginMode = !currentState.isLoginMode)
-                }
-            }
-
             AuthIntent.SubmitClicked -> emitSubmitEffect()
             AuthIntent.GoogleAuthClicked -> emitEffect(AuthEffect.GoogleAuth)
             AuthIntent.ForgotPasswordClicked -> emitForgotPasswordEffect()
@@ -49,31 +43,20 @@ class AuthViewModel : ViewModel() {
             return
         }
 
-        val effect = if (currentState.isLoginMode) {
+        emitEffect(
             AuthEffect.SignIn(
                 email = currentState.email,
                 password = currentState.password,
             )
-        } else {
-            AuthEffect.SignUp(
-                email = currentState.email,
-                password = currentState.password,
-            )
-        }
-
-        emitEffect(effect)
-    }
-
-    private fun emitForgotPasswordEffect() {
-        if (!_uiState.value.isLoginMode) {
-            return
-        }
-
-        emitEffect(AuthEffect.ForgotPassword)
+        )
     }
 
     private fun emitEffect(effect: AuthEffect) {
         val result = _effects.trySend(effect)
         check(result.isSuccess) { "Failed to emit auth effect: $effect" }
+    }
+
+    private fun emitForgotPasswordEffect() {
+        emitEffect(AuthEffect.ForgotPassword(_uiState.value.email))
     }
 }

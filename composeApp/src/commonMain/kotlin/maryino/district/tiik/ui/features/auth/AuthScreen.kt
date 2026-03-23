@@ -187,7 +187,7 @@ fun TiikLogoMark(modifier: Modifier = Modifier) {
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "t",
+                text = "ii",
                 style = MaterialTheme.typography.headlineMedium,
                 color = TiikColors.InkOnDark,
             )

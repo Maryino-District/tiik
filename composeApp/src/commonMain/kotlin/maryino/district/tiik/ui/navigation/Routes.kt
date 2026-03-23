@@ -17,6 +17,10 @@ data object AuthDestination : TiikDestination {
     override val route = "auth"
 }
 
+data object SignUpDestination : TiikDestination {
+    override val route = "sign_up"
+}
+
 data object BlocksDestination : TiikTopLevelDestination {
     override val route = "blocks"
     override val label = "Blocks"
@@ -54,5 +58,6 @@ val tiikTopLevelDestinations = listOf(
 val routesWithoutNav = setOf(
     OnboardingDestination.route,
     AuthDestination.route,
+    SignUpDestination.route,
     AddBlockDestination.route,
 )

@@ -2,6 +2,7 @@ package maryino.district.tiik.ui.features.auth
 
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -90,7 +91,7 @@ class AuthViewModelTest {
         signUpViewModel.onIntent(AuthIntent.ToggleModeClicked)
         signUpViewModel.onIntent(AuthIntent.ForgotPasswordClicked)
 
-        val signUpEffect = signUpViewModel.effects.firstOrNull()
+        val signUpEffect = withTimeoutOrNull(50) { signUpViewModel.effects.firstOrNull() }
 
         assertNull(signUpEffect)
     }

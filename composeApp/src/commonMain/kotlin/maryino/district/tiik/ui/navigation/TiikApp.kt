@@ -19,6 +19,8 @@ import maryino.district.tiik.ui.features.addblock.AddBlockScreen
 import maryino.district.tiik.ui.features.addblock.FriendUser
 import maryino.district.tiik.ui.features.addblock.InstalledApp
 import maryino.district.tiik.ui.features.auth.AuthScreen
+import maryino.district.tiik.ui.features.auth.SignUpEmailCheckResult
+import maryino.district.tiik.ui.features.auth.SignUpScreen
 import maryino.district.tiik.ui.features.blocks.BlockItem
 import maryino.district.tiik.ui.features.blocks.BlockStatus
 import maryino.district.tiik.ui.features.blocks.BlocksScreen
@@ -97,6 +99,24 @@ fun TiikApp(
                         },
                         onGoogleAuth = {},
                         onForgotPassword = {},
+                    )
+                }
+
+                composable(SignUpDestination.route) {
+                    SignUpScreen(
+                        onSignUp = { _, _ ->
+                            navController.navigate(BlocksDestination.route) {
+                                popUpTo(SignUpDestination.route) { inclusive = true }
+                            }
+                        },
+                        onForgotPassword = {},
+                        checkEmailAvailability = { email ->
+                            if (email == "existing@tiik.app") {
+                                SignUpEmailCheckResult.AlreadyExists
+                            } else {
+                                SignUpEmailCheckResult.Available
+                            }
+                        },
                     )
                 }
 

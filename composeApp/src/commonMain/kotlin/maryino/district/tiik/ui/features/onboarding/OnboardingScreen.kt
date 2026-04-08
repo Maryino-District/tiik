@@ -13,8 +13,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.components.*
 import maryino.district.tiik.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
 
 // ─────────────────────────────────────────────────────────────
 // Data model
@@ -58,17 +60,21 @@ fun OnboardingScreen(
 
         // ── Heading ──────────────────────────────────────────
         EyebrowText(
-            text = "Setup · step ${currentStep + 1} of ${permissions.size}",
+            text = stringResource(
+                Res.string.onboarding_setup_step,
+                currentStep + 1,
+                permissions.size,
+            ),
         )
         Spacer(Modifier.height(Spacing.xs))
         Text(
-            text = "A few permissions\nto get started",
+            text = stringResource(Res.string.onboarding_title),
             style = MaterialTheme.typography.headlineMedium,
             color = TiikColors.Ink,
         )
         Spacer(Modifier.height(Spacing.sm))
         Text(
-            text = "tiik needs these to keep your blocks running when you switch apps.",
+            text = stringResource(Res.string.onboarding_description),
             style = MaterialTheme.typography.bodyMedium,
             color = TiikColors.Ink3,
         )
@@ -87,8 +93,8 @@ fun OnboardingScreen(
         // ── CTA ───────────────────────────────────────────────
         TiikButton(
             text = permissions.getOrNull(currentStep)
-                ?.let { "Allow ${it.title}" }
-                ?: "Continue",
+                ?.let { stringResource(Res.string.onboarding_allow_permission, it.title) }
+                ?: stringResource(Res.string.common_continue),
             onClick = onRequestPermission,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -210,10 +216,11 @@ private fun PermissionRow(item: PermissionItem) {
 // Preview data helper
 // ─────────────────────────────────────────────────────────────
 
+@Composable
 fun samplePermissions() = listOf(
-    PermissionItem("📊", "Usage stats",    PermissionState.Done),
-    PermissionItem("♿", "Accessibility",  PermissionState.Done),
-    PermissionItem("🔔", "Notifications",  PermissionState.Active),
+    PermissionItem("📊", stringResource(Res.string.onboarding_usage_stats), PermissionState.Done),
+    PermissionItem("♿", stringResource(Res.string.onboarding_accessibility), PermissionState.Done),
+    PermissionItem("🔔", stringResource(Res.string.onboarding_notifications), PermissionState.Active),
 )
 
 @Preview

@@ -3,22 +3,30 @@ package maryino.district.tiik.ui.features.auth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.collectLatest
+import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.components.*
 import maryino.district.tiik.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
 
 // ─────────────────────────────────────────────────────────────
 // Screen
@@ -79,7 +87,7 @@ private fun AuthScreenContent(
         Spacer(Modifier.height(Spacing.lg))
 
         EyebrowText(
-            text = "Welcome back",
+            text = stringResource(Res.string.auth_welcome_back),
             modifier = Modifier.align(Alignment.CenterHorizontally),
         )
 
@@ -89,8 +97,8 @@ private fun AuthScreenContent(
         TiikTextField(
             value = state.email,
             onValueChange = { onIntent(AuthIntent.EmailChanged(it)) },
-            placeholder = "you@example.com",
-            label = "Email",
+            placeholder = stringResource(Res.string.common_email_placeholder),
+            label = stringResource(Res.string.common_email_label),
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -99,14 +107,14 @@ private fun AuthScreenContent(
         TiikTextField(
             value = state.password,
             onValueChange = { onIntent(AuthIntent.PasswordChanged(it)) },
-            placeholder = "••••••••",
-            label = "Password",
+            placeholder = stringResource(Res.string.common_password_placeholder),
+            label = stringResource(Res.string.common_password_label),
             modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(Modifier.height(Spacing.sm))
         Text(
-            text = "Forgot password?",
+            text = stringResource(Res.string.auth_forgot_password),
             style = MaterialTheme.typography.bodySmall,
             color = TiikColors.Ink3,
             modifier = Modifier
@@ -117,7 +125,7 @@ private fun AuthScreenContent(
         Spacer(Modifier.height(Spacing.xl))
 
         TiikButton(
-            text = "Sign in",
+            text = stringResource(Res.string.auth_sign_in),
             onClick = { onIntent(AuthIntent.SubmitClicked) },
             enabled = state.isSubmitEnabled && !isLoading,
             modifier = Modifier.fillMaxWidth(),
@@ -131,7 +139,7 @@ private fun AuthScreenContent(
             horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
             TiikDivider(Modifier.weight(1f))
-            Text("or", style = MaterialTheme.typography.bodySmall, color = TiikColors.Ink3)
+            Text(stringResource(Res.string.auth_or), style = MaterialTheme.typography.bodySmall, color = TiikColors.Ink3)
             TiikDivider(Modifier.weight(1f))
         }
 
@@ -139,7 +147,7 @@ private fun AuthScreenContent(
 
         // ── Google ────────────────────────────────────────────
         TiikButton(
-            text = "Continue with Google",
+            text = stringResource(Res.string.auth_continue_with_google),
             onClick = { onIntent(AuthIntent.GoogleAuthClicked) },
             style = TiikButtonStyle.Light,
             modifier = Modifier.fillMaxWidth(),
@@ -148,9 +156,9 @@ private fun AuthScreenContent(
         Spacer(Modifier.weight(1f))
 
         val toggleText = buildAnnotatedString {
-            append("No account? ")
+            append(stringResource(Res.string.auth_no_account))
             withStyle(SpanStyle(color = TiikColors.Ink, fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)) {
-                append("Sign up")
+                append(stringResource(Res.string.auth_sign_up))
             }
         }
         Text(
@@ -162,6 +170,35 @@ private fun AuthScreenContent(
                 .clickable(onClick = onSignUpClick),
         )
     }
+}
+
+@Preview
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun AuthTopBar(
+    onBackClick: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
+    val backDescription = stringResource(Res.string.common_back)
+
+    TopAppBar(
+        title = {},
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Text(
+                    text = "\u2190",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = TiikColors.Ink,
+                    modifier = Modifier.semantics { contentDescription = backDescription },
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = TiikColors.Bg,
+            navigationIconContentColor = TiikColors.Ink,
+        ),
+        modifier = modifier,
+    )
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -184,14 +221,14 @@ fun TiikLogoMark(modifier: Modifier = Modifier) {
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "ii",
+                text = stringResource(Res.string.auth_logo_mark),
                 style = MaterialTheme.typography.headlineMedium,
                 color = TiikColors.InkOnDark,
             )
         }
         // Wordmark
         Text(
-            text = "tiik",
+            text = stringResource(Res.string.auth_logo_wordmark),
             style = MaterialTheme.typography.headlineSmall,
             color = TiikColors.Ink,
         )

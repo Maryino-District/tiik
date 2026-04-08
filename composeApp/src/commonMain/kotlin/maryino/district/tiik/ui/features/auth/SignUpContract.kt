@@ -1,11 +1,13 @@
 package maryino.district.tiik.ui.features.auth
 
+import maryino.district.tiik.ui.resources.UiText
+
 data class SignUpState(
     val email: String = "",
     val password: String = "",
     val repeatPassword: String = "",
     val isCheckingEmail: Boolean = false,
-    val validationMessage: String? = null,
+    val validationMessage: UiText? = null,
 ) {
     val isSubmitEnabled: Boolean
         get() = email.isNotBlank() &&

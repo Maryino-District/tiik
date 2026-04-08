@@ -6,6 +6,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
+import maryino.district.tiik.ui.resources.UiText
+import tiik.composeapp.generated.resources.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -33,7 +35,10 @@ class SignUpViewModelTest {
         viewModel.onIntent(SignUpIntent.RepeatPasswordChanged("different"))
         viewModel.onIntent(SignUpIntent.SubmitClicked)
 
-        assertEquals(SIGN_UP_PASSWORD_MISMATCH_MESSAGE, viewModel.uiState.value.validationMessage)
+        assertEquals(
+            UiText.from(Res.string.auth_sign_up_password_mismatch),
+            viewModel.uiState.value.validationMessage,
+        )
         assertEquals(0, backendCalls)
         assertNull(withTimeoutOrNull(50) { viewModel.effects.firstOrNull() })
     }
@@ -72,7 +77,10 @@ class SignUpViewModelTest {
 
         val effect = viewModel.effects.firstOrNull()
 
-        assertEquals(SIGN_UP_ACCOUNT_EXISTS_MESSAGE, viewModel.uiState.value.validationMessage)
+        assertEquals(
+            UiText.from(Res.string.auth_sign_up_account_exists),
+            viewModel.uiState.value.validationMessage,
+        )
         assertIs<SignUpEffect.ForgotPassword>(effect)
         assertEquals("user@example.com", effect.email)
     }

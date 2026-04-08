@@ -15,8 +15,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.components.*
 import maryino.district.tiik.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
 
 // ─────────────────────────────────────────────────────────────
 // Two sub-screens: form + waiting state
@@ -108,10 +110,10 @@ private fun RequestForm(
                 Text("←", style = MaterialTheme.typography.titleMedium, color = TiikColors.Ink)
             }
             Column {
-                EyebrowText("Unlock request")
+                EyebrowText(stringResource(Res.string.unlock_request_title))
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = "Ask your guardian",
+                    text = stringResource(Res.string.unlock_request_subtitle),
                     style = MaterialTheme.typography.headlineSmall,
                     color = TiikColors.Ink,
                 )
@@ -151,7 +153,10 @@ private fun RequestForm(
                         color = TiikColors.Ink,
                     )
                     Text(
-                        text = "@$guardianUsername · will be notified",
+                        text = stringResource(
+                            Res.string.unlock_guardian_will_be_notified,
+                            guardianUsername,
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = TiikColors.Ink3,
                     )
@@ -160,7 +165,7 @@ private fun RequestForm(
 
             // App chip
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-                EyebrowText("Unlocking")
+                EyebrowText(stringResource(Res.string.unlocking_label))
                 Row(
                     modifier = Modifier
                         .clip(TiikShapes.sm)
@@ -181,11 +186,11 @@ private fun RequestForm(
 
             // Message field
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-                EyebrowText("Why? (optional)")
+                EyebrowText(stringResource(Res.string.unlock_reason_optional))
                 TiikTextField(
                     value = message,
                     onValueChange = { message = it },
-                    placeholder = "e.g. Need to check a work DM…",
+                    placeholder = stringResource(Res.string.unlock_message_placeholder),
                     singleLine = false,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -194,7 +199,7 @@ private fun RequestForm(
             }
 
             Text(
-                text = "@$guardianUsername can approve or deny from their phone.",
+                text = stringResource(Res.string.unlock_guardian_can_approve, guardianUsername),
                 style = MaterialTheme.typography.bodySmall,
                 color = TiikColors.Ink3,
             )
@@ -202,7 +207,7 @@ private fun RequestForm(
 
         // CTA
         TiikButton(
-            text = "Send request →",
+            text = stringResource(Res.string.unlock_send_request),
             onClick = { onSend(message) },
             modifier = Modifier
                 .fillMaxWidth()
@@ -271,13 +276,13 @@ private fun WaitingState(
         Spacer(Modifier.height(Spacing.xxl))
 
         Text(
-            text = "Request sent",
+            text = stringResource(Res.string.unlock_request_sent),
             style = MaterialTheme.typography.headlineMedium,
             color = TiikColors.Ink,
         )
         Spacer(Modifier.height(Spacing.sm))
         Text(
-            text = "Waiting for @$guardianUsername\nto respond.",
+            text = stringResource(Res.string.unlock_waiting_for_response, guardianUsername),
             style = MaterialTheme.typography.bodyMedium,
             color = TiikColors.Ink3,
             textAlign = TextAlign.Center,
@@ -286,9 +291,9 @@ private fun WaitingState(
         Spacer(Modifier.height(Spacing.x3l))
 
         // Status items
-        StatusLine(label = "Request delivered", isDone = true)
+        StatusLine(label = stringResource(Res.string.unlock_request_delivered), isDone = true)
         Spacer(Modifier.height(Spacing.sm))
-        StatusLine(label = "Waiting for approval…", isDone = false)
+        StatusLine(label = stringResource(Res.string.unlock_waiting_for_approval), isDone = false)
     }
 }
 
@@ -353,13 +358,13 @@ private fun ApprovedState(
         Spacer(Modifier.height(Spacing.xxl))
 
         Text(
-            text = "Unlocked!",
+            text = stringResource(Res.string.unlock_approved_title),
             style = MaterialTheme.typography.headlineLarge,
             color = TiikColors.Ink,
         )
         Spacer(Modifier.height(Spacing.sm))
         Text(
-            text = "@$guardianUsername approved your request.",
+            text = stringResource(Res.string.unlock_approved_description, guardianUsername),
             style = MaterialTheme.typography.bodyMedium,
             color = TiikColors.Ink3,
             textAlign = TextAlign.Center,
@@ -407,7 +412,7 @@ private fun ApprovedState(
         Spacer(Modifier.height(Spacing.x3l))
 
         TiikButton(
-            text = "Open app",
+            text = stringResource(Res.string.unlock_open_app),
             onClick = onOpenApp,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -445,7 +450,7 @@ private fun DeniedState(
         Spacer(Modifier.height(Spacing.xxl))
 
         Text(
-            text = "Request denied",
+            text = stringResource(Res.string.unlock_denied_title),
             style = MaterialTheme.typography.headlineMedium,
             color = TiikColors.Ink,
         )
@@ -462,7 +467,7 @@ private fun DeniedState(
             )
         } else {
             Text(
-                text = "Your guardian said no.\nStay focused — you've got this.",
+                text = stringResource(Res.string.unlock_denied_description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = TiikColors.Ink3,
                 textAlign = TextAlign.Center,
@@ -472,7 +477,7 @@ private fun DeniedState(
         Spacer(Modifier.height(Spacing.x3l))
 
         TiikButton(
-            text = "← Back",
+            text = stringResource(Res.string.unlock_back),
             onClick = onBack,
             style = TiikButtonStyle.Light,
             modifier = Modifier.fillMaxWidth(),

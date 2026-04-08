@@ -1,11 +1,14 @@
 package maryino.district.tiik.ui.navigation
 
+import tiik.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.StringResource
+
 sealed interface TiikDestination {
     val route: String
 }
 
 sealed interface TiikTopLevelDestination : TiikDestination {
-    val label: String
+    val label: StringResource
     val emoji: String
 }
 
@@ -21,30 +24,29 @@ data object SignUpDestination : TiikDestination {
     override val route = "sign_up"
 }
 
-data object ForgotPasswordDestination : TiikDestination {
-    override val route = "forgot_password/{email}"
+data object EmailVerificationDestination : TiikDestination {
+    override val route = "email_verification"
+}
 
-    fun createRoute(email: String): String {
-        val routeEmail = if (email.isBlank()) "_" else email
-        return "forgot_password/$routeEmail"
-    }
+data object ForgotPasswordDestination : TiikDestination {
+    override val route = "forgot_password"
 }
 
 data object BlocksDestination : TiikTopLevelDestination {
     override val route = "blocks"
-    override val label = "Blocks"
+    override val label = Res.string.nav_blocks
     override val emoji = "\uD83D\uDD12"
 }
 
 data object PlaceholderDestination : TiikTopLevelDestination {
     override val route = "placeholder"
-    override val label = "Soon"
+    override val label = Res.string.nav_soon
     override val emoji = "\u2728"
 }
 
 data object ProfileDestination : TiikTopLevelDestination {
     override val route = "profile"
-    override val label = "Profile"
+    override val label = Res.string.nav_profile
     override val emoji = "\uD83D\uDC64"
 }
 
@@ -68,6 +70,7 @@ val routesWithoutNav = setOf(
     OnboardingDestination.route,
     AuthDestination.route,
     SignUpDestination.route,
+    EmailVerificationDestination.route,
     ForgotPasswordDestination.route,
     AddBlockDestination.route,
 )

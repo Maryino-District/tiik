@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import tiik.composeapp.generated.resources.*
+import maryino.district.tiik.ui.resources.UiText
 
 class ForgotPasswordViewModel(
     initialEmail: String,
@@ -47,7 +49,9 @@ class ForgotPasswordViewModel(
         val email = _uiState.value.email
         if (email.isBlank()) {
             _uiState.update { currentState ->
-                currentState.copy(validationMessage = FORGOT_PASSWORD_EMAIL_REQUIRED_MESSAGE)
+                currentState.copy(
+                    validationMessage = UiText.from(Res.string.auth_forgot_password_email_required),
+                )
             }
             return
         }

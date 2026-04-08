@@ -3,8 +3,6 @@ package maryino.district.tiik.ui.features.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import tiik.composeapp.generated.resources.*
+import maryino.district.tiik.ui.resources.UiText
 
 class SignUpViewModel(
     private val checkEmailAvailability: suspend (String) -> SignUpEmailCheckResult,
@@ -91,7 +91,7 @@ class SignUpViewModel(
                     updateState {
                         copy(
                             isCheckingEmail = false,
-                            validationMessage = SIGN_UP_ACCOUNT_EXISTS_MESSAGE,
+                            validationMessage = UiText.from(Res.string.auth_sign_up_account_exists),
                         )
                     }
                     emitEffect(SignUpEffect.ForgotPassword(state.email))
@@ -109,10 +109,12 @@ class SignUpViewModel(
         emitEffect(SignUpEffect.ForgotPassword(email))
     }
 
-    private fun validate(state: SignUpState): String? = when {
-        state.email.isBlank() -> SIGN_UP_EMAIL_REQUIRED_MESSAGE
-        state.password.isBlank() || state.repeatPassword.isBlank() -> SIGN_UP_PASSWORD_REQUIRED_MESSAGE
-        state.password != state.repeatPassword -> SIGN_UP_PASSWORD_MISMATCH_MESSAGE
+    private fun validate(state: SignUpState): UiText? = when {
+        state.email.isBlank() -> UiText.from(Res.string.auth_sign_up_email_required)
+        state.password.isBlank() || state.repeatPassword.isBlank() -> UiText.from(
+            Res.string.auth_sign_up_password_required,
+        )
+        state.password != state.repeatPassword -> UiText.from(Res.string.auth_sign_up_password_mismatch)
         else -> null
     }
 
@@ -125,8 +127,3 @@ class SignUpViewModel(
         check(result.isSuccess) { "Failed to emit sign up effect: $effect" }
     }
 }
-
-const val SIGN_UP_EMAIL_REQUIRED_MESSAGE = "Enter your email."
-const val SIGN_UP_PASSWORD_REQUIRED_MESSAGE = "Enter and confirm your password."
-const val SIGN_UP_PASSWORD_MISMATCH_MESSAGE = "Passwords do not match."
-const val SIGN_UP_ACCOUNT_EXISTS_MESSAGE = "This email is already registered. Reset your password instead."

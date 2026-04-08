@@ -2,26 +2,13 @@ package maryino.district.tiik.ui.features.auth
 
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AuthViewModelTest {
-
-    @Test
-    fun `toggle mode switches between login and sign up`() {
-        val viewModel = AuthViewModel()
-
-        assertTrue(viewModel.uiState.value.isLoginMode)
-
-        viewModel.onIntent(AuthIntent.ToggleModeClicked)
-
-        assertFalse(viewModel.uiState.value.isLoginMode)
-    }
 
     @Test
     fun `changing credentials updates ui state`() {
@@ -48,7 +35,7 @@ class AuthViewModelTest {
     }
 
     @Test
-    fun `submit emits sign in effect in login mode`() = runBlocking {
+    fun `submit emits sign in effect when form is valid`() = runBlocking {
         val viewModel = AuthViewModel()
 
         viewModel.onIntent(AuthIntent.EmailChanged("user@example.com"))
@@ -63,36 +50,24 @@ class AuthViewModelTest {
     }
 
     @Test
-    fun `submit emits sign up effect in sign up mode`() = runBlocking {
+    fun `google auth emits effect`() = runBlocking {
         val viewModel = AuthViewModel()
 
-        viewModel.onIntent(AuthIntent.ToggleModeClicked)
-        viewModel.onIntent(AuthIntent.EmailChanged("user@example.com"))
-        viewModel.onIntent(AuthIntent.PasswordChanged("secret"))
-        viewModel.onIntent(AuthIntent.SubmitClicked)
+        viewModel.onIntent(AuthIntent.GoogleAuthClicked)
 
-        val effect = viewModel.effects.firstOrNull()
-
-        assertIs<AuthEffect.SignUp>(effect)
-        assertEquals("user@example.com", effect.email)
-        assertEquals("secret", effect.password)
+        assertEquals(AuthEffect.GoogleAuth, viewModel.effects.firstOrNull())
     }
 
     @Test
-    fun `forgot password emits effect only in login mode`() = runBlocking {
-        val loginViewModel = AuthViewModel()
+    fun `forgot password emits email effect`() = runBlocking {
+        val viewModel = AuthViewModel()
 
-        loginViewModel.onIntent(AuthIntent.ForgotPasswordClicked)
-        val loginEffect = loginViewModel.effects.firstOrNull()
+        viewModel.onIntent(AuthIntent.EmailChanged("user@example.com"))
+        viewModel.onIntent(AuthIntent.ForgotPasswordClicked)
 
-        assertEquals(AuthEffect.ForgotPassword, loginEffect)
+        val effect = viewModel.effects.firstOrNull()
 
-        val signUpViewModel = AuthViewModel()
-        signUpViewModel.onIntent(AuthIntent.ToggleModeClicked)
-        signUpViewModel.onIntent(AuthIntent.ForgotPasswordClicked)
-
-        val signUpEffect = withTimeoutOrNull(50) { signUpViewModel.effects.firstOrNull() }
-
-        assertNull(signUpEffect)
+        assertIs<AuthEffect.ForgotPassword>(effect)
+        assertEquals("user@example.com", effect.email)
     }
 }

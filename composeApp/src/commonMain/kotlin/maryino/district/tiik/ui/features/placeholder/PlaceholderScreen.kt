@@ -14,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.components.EyebrowText
 import maryino.district.tiik.ui.theme.Spacing
 import maryino.district.tiik.ui.theme.TiikColors
 import maryino.district.tiik.ui.theme.TiikScreenPreview
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PlaceholderScreen(
@@ -38,7 +40,7 @@ fun PlaceholderScreen(
             style = MaterialTheme.typography.displayMedium,
         )
         Spacer(Modifier.height(Spacing.xl))
-        EyebrowText(text = "Placeholder")
+        EyebrowText(text = stringResource(Res.string.placeholder_label))
         Spacer(Modifier.height(Spacing.xs))
         Text(
             text = title,
@@ -61,8 +63,8 @@ fun PlaceholderScreen(
 private fun PlaceholderScreenPreview() {
     TiikScreenPreview {
         PlaceholderScreen(
-            title = "Future feature slot",
-            description = "Reserved for the next top-level feature.",
+            title = stringResource(Res.string.placeholder_preview_title),
+            description = stringResource(Res.string.placeholder_preview_description),
         )
     }
 }

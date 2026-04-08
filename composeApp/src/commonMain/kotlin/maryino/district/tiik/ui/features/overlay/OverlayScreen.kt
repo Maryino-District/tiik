@@ -13,8 +13,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.components.*
 import maryino.district.tiik.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
 
 // ─────────────────────────────────────────────────────────────
 // Note: This screen is shown as a TYPE_APPLICATION_OVERLAY
@@ -76,14 +78,14 @@ fun OverlayScreen(
 
             // ── Heading ───────────────────────────────────────
             EyebrowText(
-                text = "Blocked",
+                text = stringResource(Res.string.overlay_blocked),
                 color = Color.White.copy(alpha = 0.25f),
             )
 
             Spacer(Modifier.height(Spacing.xs))
 
             Text(
-                text = "$blockedAppName\nis locked",
+                text = stringResource(Res.string.overlay_app_locked, blockedAppName),
                 style = MaterialTheme.typography.headlineLarge,
                 color = TiikColors.InkOnDark,
                 textAlign = TextAlign.Center,
@@ -92,7 +94,7 @@ fun OverlayScreen(
             Spacer(Modifier.height(Spacing.sm))
 
             Text(
-                text = "You asked @$guardianUsername to keep you\naccountable. Stay on track.",
+                text = stringResource(Res.string.overlay_description, guardianUsername),
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White.copy(alpha = 0.4f),
                 textAlign = TextAlign.Center,
@@ -121,7 +123,7 @@ fun OverlayScreen(
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Text(
-                        text = "Request unlock",
+                        text = stringResource(Res.string.overlay_request_unlock),
                         style = MaterialTheme.typography.labelLarge,
                         color = TiikColors.Ink,
                     )
@@ -145,7 +147,7 @@ fun OverlayScreen(
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Text(
-                        text = "← Go back",
+                        text = stringResource(Res.string.overlay_go_back),
                         style = MaterialTheme.typography.labelLarge,
                         color = Color.White.copy(alpha = 0.3f),
                     )

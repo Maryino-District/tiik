@@ -22,7 +22,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
 
 // ─────────────────────────────────────────────────────────────
 // TiikButton
@@ -380,12 +382,13 @@ fun GuardianRow(
     modifier: Modifier = Modifier,
     isOnline: Boolean = false,
     onDark: Boolean = false,
-    role: String = "Your guardian",
+    role: String? = null,
 ) {
     val bg          = if (onDark) Color(0x0DFFFFFF) else TiikColors.BgMuted
     val borderColor = if (onDark) Color(0x1AFFFFFF) else TiikColors.Border
     val nameColor   = if (onDark) TiikColors.InkOnDark else TiikColors.Ink
     val roleColor   = if (onDark) Color(0x47FFFFFF) else TiikColors.Ink3
+    val resolvedRole = role ?: stringResource(Res.string.components_guardian_role)
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -411,7 +414,7 @@ fun GuardianRow(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(username, style = MaterialTheme.typography.titleSmall, color = nameColor)
-                Text(role, style = MaterialTheme.typography.bodySmall, color = roleColor)
+                Text(resolvedRole, style = MaterialTheme.typography.bodySmall, color = roleColor)
             }
 
             if (isOnline) {
@@ -426,7 +429,7 @@ fun GuardianRow(
                             .background(TiikColors.Success)
                     )
                     Text(
-                        text = "online",
+                        text = stringResource(Res.string.common_online),
                         style = MaterialTheme.typography.labelSmall,
                         color = TiikColors.Success,
                     )
@@ -494,7 +497,7 @@ fun SettingRow(
 private fun TiikButtonPreview() {
     TiikComponentPreview {
         TiikButton(
-            text = "Continue",
+            text = stringResource(Res.string.common_continue),
             onClick = {},
         )
     }
@@ -506,13 +509,13 @@ private fun TiikCardPreview() {
     TiikComponentPreview {
         TiikCard {
             Text(
-                text = "Preview card",
+                text = stringResource(Res.string.components_preview_card),
                 style = MaterialTheme.typography.titleLarge,
                 color = TiikColors.Ink,
             )
             Spacer(Modifier.height(Spacing.xs))
             Text(
-                text = "Shared component preview content.",
+                text = stringResource(Res.string.components_preview_card_description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = TiikColors.Ink3,
             )
@@ -527,8 +530,8 @@ private fun TiikTextFieldPreview() {
         TiikTextField(
             value = "alex@example.com",
             onValueChange = {},
-            placeholder = "Email",
-            label = "Email",
+            placeholder = stringResource(Res.string.common_email_label),
+            label = stringResource(Res.string.common_email_label),
         )
     }
 }
@@ -544,7 +547,7 @@ private fun ComponentRowsPreview() {
                 appIcon = { Text("\uD83D\uDCF1") },
                 trailing = {
                     TiikBadge(
-                        text = "Locked",
+                        text = stringResource(Res.string.blocks_status_locked),
                         style = TiikBadgeStyle.Dark,
                     )
                 },
@@ -554,10 +557,10 @@ private fun ComponentRowsPreview() {
                 isOnline = true,
             )
             SettingRow(
-                title = "Notifications",
-                subtitle = "Critical alerts only",
+                title = stringResource(Res.string.profile_notifications),
+                subtitle = stringResource(Res.string.components_notifications_critical),
                 icon = { Text("\uD83D\uDD14") },
-                trailingValue = "On",
+                trailingValue = stringResource(Res.string.profile_on),
             )
         }
     }

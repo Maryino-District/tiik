@@ -21,17 +21,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.collectLatest
+import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.components.EyebrowText
 import maryino.district.tiik.ui.components.TiikButton
 import maryino.district.tiik.ui.components.TiikButtonStyle
 import maryino.district.tiik.ui.components.TiikTextField
+import maryino.district.tiik.ui.resources.UiText
+import maryino.district.tiik.ui.resources.asString
 import maryino.district.tiik.ui.theme.Spacing
 import maryino.district.tiik.ui.theme.TiikColors
 import maryino.district.tiik.ui.theme.TiikScreenPreview
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SignUpScreen(
     onSignUp: (email: String, password: String) -> Unit,
+    onBack: () -> Unit,
     onForgotPassword: (email: String) -> Unit,
     checkEmailAvailability: suspend (String) -> SignUpEmailCheckResult,
     modifier: Modifier = Modifier,
@@ -54,6 +59,7 @@ fun SignUpScreen(
     SignUpScreenContent(
         state = state,
         onIntent = signUpViewModel::onIntent,
+        onBack = onBack,
         modifier = modifier,
         isLoading = isLoading,
     )
@@ -63,6 +69,7 @@ fun SignUpScreen(
 private fun SignUpScreenContent(
     state: SignUpState,
     onIntent: (SignUpIntent) -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
 ) {
@@ -73,14 +80,19 @@ private fun SignUpScreenContent(
             .padding(horizontal = Spacing.screenPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(Modifier.height(Spacing.x5l))
+        AuthTopBar(
+            onBackClick = onBack,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(Modifier.height(Spacing.xl))
 
         TiikLogoMark()
 
         Spacer(Modifier.height(Spacing.lg))
 
         EyebrowText(
-            text = "Create account",
+            text = stringResource(Res.string.auth_create_account),
             modifier = Modifier.align(Alignment.CenterHorizontally),
         )
 
@@ -89,8 +101,8 @@ private fun SignUpScreenContent(
         TiikTextField(
             value = state.email,
             onValueChange = { onIntent(SignUpIntent.EmailChanged(it)) },
-            placeholder = "you@example.com",
-            label = "Email",
+            placeholder = stringResource(Res.string.common_email_placeholder),
+            label = stringResource(Res.string.common_email_label),
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -99,8 +111,8 @@ private fun SignUpScreenContent(
         TiikTextField(
             value = state.password,
             onValueChange = { onIntent(SignUpIntent.PasswordChanged(it)) },
-            placeholder = "••••••••",
-            label = "Password",
+            placeholder = stringResource(Res.string.common_password_placeholder),
+            label = stringResource(Res.string.common_password_label),
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -109,15 +121,15 @@ private fun SignUpScreenContent(
         TiikTextField(
             value = state.repeatPassword,
             onValueChange = { onIntent(SignUpIntent.RepeatPasswordChanged(it)) },
-            placeholder = "••••••••",
-            label = "Repeat password",
+            placeholder = stringResource(Res.string.common_password_placeholder),
+            label = stringResource(Res.string.auth_repeat_password),
             modifier = Modifier.fillMaxWidth(),
         )
 
         if (state.validationMessage != null) {
             Spacer(Modifier.height(Spacing.sm))
             Text(
-                text = state.validationMessage,
+                text = state.validationMessage.asString(),
                 style = MaterialTheme.typography.bodySmall,
                 color = TiikColors.Danger,
                 modifier = Modifier.fillMaxWidth(),
@@ -127,16 +139,20 @@ private fun SignUpScreenContent(
         Spacer(Modifier.height(Spacing.xl))
 
         TiikButton(
-            text = if (state.isCheckingEmail || isLoading) "Checking..." else "Create account",
+            text = if (state.isCheckingEmail || isLoading) {
+                stringResource(Res.string.auth_checking)
+            } else {
+                stringResource(Res.string.auth_create_account)
+            },
             onClick = { onIntent(SignUpIntent.SubmitClicked) },
             enabled = state.isSubmitEnabled && !isLoading,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        if (state.validationMessage == SIGN_UP_ACCOUNT_EXISTS_MESSAGE) {
+        if (state.validationMessage == UiText.from(Res.string.auth_sign_up_account_exists)) {
             Spacer(Modifier.height(Spacing.md))
             Text(
-                text = "Go to forgot password",
+                text = stringResource(Res.string.auth_go_to_forgot_password),
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
                 color = TiikColors.Ink,
                 modifier = Modifier
@@ -148,7 +164,7 @@ private fun SignUpScreenContent(
         Spacer(Modifier.weight(1f))
 
         Text(
-            text = "Already have an account? Sign in",
+            text = stringResource(Res.string.auth_already_have_account),
             style = MaterialTheme.typography.bodySmall,
             color = TiikColors.Ink3,
             modifier = Modifier.padding(bottom = Spacing.x3l),
@@ -162,6 +178,7 @@ private fun SignUpScreenPreview() {
     TiikScreenPreview {
         SignUpScreen(
             onSignUp = { _, _ -> },
+            onBack = {},
             onForgotPassword = {},
             checkEmailAvailability = { SignUpEmailCheckResult.Available },
         )

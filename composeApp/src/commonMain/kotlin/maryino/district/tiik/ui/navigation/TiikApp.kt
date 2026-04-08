@@ -15,10 +15,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.features.addblock.AddBlockScreen
 import maryino.district.tiik.ui.features.addblock.FriendUser
 import maryino.district.tiik.ui.features.addblock.InstalledApp
 import maryino.district.tiik.ui.features.auth.AuthScreen
+import maryino.district.tiik.ui.features.auth.EmailVerificationScreen
 import maryino.district.tiik.ui.features.auth.ForgotPasswordScreen
 import maryino.district.tiik.ui.features.auth.SignUpEmailCheckResult
 import maryino.district.tiik.ui.features.auth.SignUpScreen
@@ -34,6 +36,7 @@ import maryino.district.tiik.ui.features.profile.UserProfile
 import maryino.district.tiik.ui.features.unlock.UnlockRequestScreen
 import maryino.district.tiik.ui.features.unlock.UnlockScreenState
 import maryino.district.tiik.ui.theme.TiikTheme
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TiikApp(
@@ -44,6 +47,8 @@ fun TiikApp(
         val navController = rememberNavController()
         val backStack by navController.currentBackStackEntryAsState()
         val currentRoute = backStack?.destination?.route
+        var signUpEmail by remember { mutableStateOf("") }
+        var forgotPasswordEmail by remember { mutableStateOf("") }
 
         val startDestination = when {
             !isOnboardingComplete -> OnboardingDestination.route
@@ -98,20 +103,24 @@ fun TiikApp(
                         },
                         onGoogleAuth = {},
                         onForgotPassword = { email ->
-                            navController.navigate(ForgotPasswordDestination.createRoute(email))
+                            forgotPasswordEmail = email
+                            navController.navigate(ForgotPasswordDestination.route)
                         },
                     )
                 }
 
                 composable(SignUpDestination.route) {
                     SignUpScreen(
-                        onSignUp = { _, _ ->
-                            navController.navigate(BlocksDestination.route) {
+                        onSignUp = { email, _ ->
+                            signUpEmail = email
+                            navController.navigate(EmailVerificationDestination.route) {
                                 popUpTo(SignUpDestination.route) { inclusive = true }
                             }
                         },
+                        onBack = { navController.popBackStack() },
                         onForgotPassword = { email ->
-                            navController.navigate(ForgotPasswordDestination.createRoute(email))
+                            forgotPasswordEmail = email
+                            navController.navigate(ForgotPasswordDestination.route)
                         },
                         checkEmailAvailability = { email ->
                             if (email == "existing@tiik.app") {
@@ -123,14 +132,22 @@ fun TiikApp(
                     )
                 }
 
-                composable(ForgotPasswordDestination.route) { backStackEntry ->
-                    val initialEmail = backStackEntry.arguments
-                        ?.getString("email")
-                        ?.takeUnless { it == "_" }
-                        .orEmpty()
+                composable(EmailVerificationDestination.route) {
+                    EmailVerificationScreen(
+                        initialEmail = signUpEmail,
+                        onContinue = {
+                            navController.navigate(BlocksDestination.route) {
+                                popUpTo(AuthDestination.route) { inclusive = true }
+                            }
+                        },
+                        onBack = { navController.popBackStack() },
+                        resendVerificationEmail = {},
+                    )
+                }
 
+                composable(ForgotPasswordDestination.route) {
                     ForgotPasswordScreen(
-                        initialEmail = initialEmail,
+                        initialEmail = forgotPasswordEmail,
                         onBackToSignIn = { navController.popBackStack() },
                         requestPasswordReset = {},
                     )
@@ -176,8 +193,8 @@ fun TiikApp(
 
                 composable(PlaceholderDestination.route) {
                     PlaceholderScreen(
-                        title = "Future feature slot",
-                        description = "This destination is intentionally reserved for the next top-level feature.",
+                        title = stringResource(Res.string.placeholder_title),
+                        description = stringResource(Res.string.placeholder_navigation_description),
                     )
                 }
 

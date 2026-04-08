@@ -12,8 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.components.*
 import maryino.district.tiik.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
 
 // ─────────────────────────────────────────────────────────────
 // Data models
@@ -73,7 +75,7 @@ fun BlocksScreen(
                 EyebrowText("tiik")
                 Spacer(Modifier.height(Spacing.xs))
                 Text(
-                    text = "Blocks",
+                    text = stringResource(Res.string.blocks_title),
                     style = MaterialTheme.typography.headlineLarge,
                     color = TiikColors.Ink,
                 )
@@ -87,13 +89,16 @@ fun BlocksScreen(
                 horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
                 TiikChip(
-                    text = "My blocks",
+                    text = stringResource(Res.string.blocks_tab_my_blocks),
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
                 )
                 TiikChip(
-                    text = if (guardianRequests.isEmpty()) "Guardian"
-                           else "Guardian (${guardianRequests.size})",
+                    text = if (guardianRequests.isEmpty()) {
+                        stringResource(Res.string.blocks_tab_guardian)
+                    } else {
+                        stringResource(Res.string.blocks_tab_guardian_count, guardianRequests.size)
+                    },
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
                 )
@@ -117,7 +122,7 @@ fun BlocksScreen(
                     if (active.isNotEmpty()) {
                         item {
                             EyebrowText(
-                                "Active · ${active.size}",
+                                stringResource(Res.string.blocks_active, active.size),
                                 modifier = Modifier.padding(bottom = Spacing.xs),
                             )
                         }
@@ -137,7 +142,7 @@ fun BlocksScreen(
                         item {
                             TiikDivider(Modifier.padding(vertical = Spacing.sm))
                             EyebrowText(
-                                "Recent",
+                                stringResource(Res.string.blocks_recent),
                                 modifier = Modifier.padding(bottom = Spacing.xs),
                             )
                         }
@@ -153,7 +158,7 @@ fun BlocksScreen(
                     } else {
                         item {
                             EyebrowText(
-                                "Needs your approval",
+                                stringResource(Res.string.blocks_needs_approval),
                                 modifier = Modifier.padding(bottom = Spacing.xs),
                             )
                         }
@@ -205,7 +210,7 @@ private fun BlockCard(
     ) {
         AppRow(
             appName = block.appName,
-            subtitle = "Guardian · @${block.guardianUsername}",
+            subtitle = stringResource(Res.string.blocks_guardian_subtitle, block.guardianUsername),
             appIcon = {
                 // In production: AsyncImage with PackageManager icon
                 Text("📱", style = MaterialTheme.typography.bodyLarge)
@@ -217,9 +222,9 @@ private fun BlockCard(
                     BlockStatus.Unlocked -> TiikBadgeStyle.Light
                 }
                 val badgeText = when (block.status) {
-                    BlockStatus.Locked   -> "Locked"
-                    BlockStatus.Pending  -> "Pending"
-                    BlockStatus.Unlocked -> "Unlocked"
+                    BlockStatus.Locked -> stringResource(Res.string.blocks_status_locked)
+                    BlockStatus.Pending -> stringResource(Res.string.blocks_status_pending)
+                    BlockStatus.Unlocked -> stringResource(Res.string.blocks_status_unlocked)
                 }
                 TiikBadge(text = badgeText, style = badgeStyle)
             },
@@ -243,14 +248,14 @@ private fun GuardianRequestCard(
         modifier = modifier.fillMaxWidth(),
     ) {
         EyebrowText(
-            text = "from @${request.requesterName}",
+            text = stringResource(Res.string.blocks_from_guardian, request.requesterName),
             modifier = Modifier.padding(bottom = Spacing.sm),
         )
 
         AppRow(
             appName = request.appName,
             appIcon = { Text("📱", style = MaterialTheme.typography.bodyLarge) },
-            subtitle = "wants to unlock",
+            subtitle = stringResource(Res.string.blocks_wants_to_unlock),
         )
 
         if (!request.message.isNullOrBlank()) {
@@ -279,13 +284,13 @@ private fun GuardianRequestCard(
             horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
             TiikButton(
-                text = "Deny",
+                text = stringResource(Res.string.blocks_deny),
                 onClick = onDeny,
                 style = TiikButtonStyle.Ghost,
                 modifier = Modifier.weight(1f),
             )
             TiikButton(
-                text = "Approve",
+                text = stringResource(Res.string.blocks_approve),
                 onClick = onApprove,
                 style = TiikButtonStyle.Fill,
                 modifier = Modifier.weight(1f),
@@ -348,12 +353,12 @@ private fun BlocksEmptyState(
         Text("🐦", style = MaterialTheme.typography.displayMedium)
 
         Text(
-            text = "No blocks yet",
+            text = stringResource(Res.string.blocks_empty_title),
             style = MaterialTheme.typography.titleLarge,
             color = TiikColors.Ink,
         )
         Text(
-            text = "Add your first block and pick\na friend to keep you accountable.",
+            text = stringResource(Res.string.blocks_empty_description),
             style = MaterialTheme.typography.bodyMedium,
             color = TiikColors.Ink3,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -362,7 +367,7 @@ private fun BlocksEmptyState(
         Spacer(Modifier.height(Spacing.sm))
 
         TiikButton(
-            text = "Add first block",
+            text = stringResource(Res.string.blocks_add_first),
             onClick = onAddBlock,
             modifier = Modifier.width(200.dp),
         )
@@ -380,12 +385,12 @@ private fun GuardianEmptyState(modifier: Modifier = Modifier) {
     ) {
         Text("👀", style = MaterialTheme.typography.displayMedium)
         Text(
-            text = "Nothing to review",
+            text = stringResource(Res.string.blocks_guardian_empty_title),
             style = MaterialTheme.typography.titleLarge,
             color = TiikColors.Ink,
         )
         Text(
-            text = "Requests from friends\nwill show up here.",
+            text = stringResource(Res.string.blocks_guardian_empty_description),
             style = MaterialTheme.typography.bodyMedium,
             color = TiikColors.Ink3,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,

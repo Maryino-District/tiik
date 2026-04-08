@@ -20,6 +20,7 @@ import maryino.district.tiik.ui.theme.Spacing
 import maryino.district.tiik.ui.theme.TiikComponentPreview
 import maryino.district.tiik.ui.theme.TiikColors
 import maryino.district.tiik.ui.theme.TiikShapes
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TiikBottomNav(
@@ -67,7 +68,7 @@ private fun NavItemView(
     ) {
         Text(text = item.emoji, style = MaterialTheme.typography.titleMedium)
         Text(
-            text = item.label.uppercase(),
+            text = stringResource(item.label).uppercase(),
             style = MaterialTheme.typography.labelSmall,
             color = contentColor,
         )

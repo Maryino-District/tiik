@@ -18,13 +18,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.collectLatest
+import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.components.EyebrowText
 import maryino.district.tiik.ui.components.TiikButton
 import maryino.district.tiik.ui.components.TiikButtonStyle
 import maryino.district.tiik.ui.components.TiikTextField
+import maryino.district.tiik.ui.resources.asString
 import maryino.district.tiik.ui.theme.Spacing
 import maryino.district.tiik.ui.theme.TiikColors
 import maryino.district.tiik.ui.theme.TiikScreenPreview
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ForgotPasswordScreen(
@@ -52,6 +55,7 @@ fun ForgotPasswordScreen(
     ForgotPasswordScreenContent(
         state = state,
         onIntent = forgotPasswordViewModel::onIntent,
+        onBackToSignIn = onBackToSignIn,
         modifier = modifier,
     )
 }
@@ -60,6 +64,7 @@ fun ForgotPasswordScreen(
 private fun ForgotPasswordScreenContent(
     state: ForgotPasswordState,
     onIntent: (ForgotPasswordIntent) -> Unit,
+    onBackToSignIn: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -69,14 +74,19 @@ private fun ForgotPasswordScreenContent(
             .padding(horizontal = Spacing.screenPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(Modifier.height(Spacing.x5l))
+        AuthTopBar(
+            onBackClick = onBackToSignIn,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(Modifier.height(Spacing.xl))
 
         TiikLogoMark()
 
         Spacer(Modifier.height(Spacing.lg))
 
         EyebrowText(
-            text = "Reset password",
+            text = stringResource(Res.string.auth_reset_password),
             modifier = Modifier.align(Alignment.CenterHorizontally),
         )
 
@@ -84,7 +94,7 @@ private fun ForgotPasswordScreenContent(
 
         if (state.isSuccess) {
             Text(
-                text = FORGOT_PASSWORD_SUCCESS_MESSAGE,
+                text = stringResource(Res.string.auth_forgot_password_success),
                 style = MaterialTheme.typography.bodyMedium,
                 color = TiikColors.Ink2,
                 modifier = Modifier.fillMaxWidth(),
@@ -93,7 +103,7 @@ private fun ForgotPasswordScreenContent(
             Spacer(Modifier.height(Spacing.xl))
 
             TiikButton(
-                text = "Back to sign in",
+                text = stringResource(Res.string.auth_back_to_sign_in),
                 onClick = { onIntent(ForgotPasswordIntent.BackToSignInClicked) },
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -101,15 +111,15 @@ private fun ForgotPasswordScreenContent(
             TiikTextField(
                 value = state.email,
                 onValueChange = { onIntent(ForgotPasswordIntent.EmailChanged(it)) },
-                placeholder = "you@example.com",
-                label = "Email",
+                placeholder = stringResource(Res.string.common_email_placeholder),
+                label = stringResource(Res.string.common_email_label),
                 modifier = Modifier.fillMaxWidth(),
             )
 
             if (state.validationMessage != null) {
                 Spacer(Modifier.height(Spacing.sm))
                 Text(
-                    text = state.validationMessage,
+                    text = state.validationMessage.asString(),
                     style = MaterialTheme.typography.bodySmall,
                     color = TiikColors.Danger,
                     modifier = Modifier.fillMaxWidth(),
@@ -119,7 +129,11 @@ private fun ForgotPasswordScreenContent(
             Spacer(Modifier.height(Spacing.xl))
 
             TiikButton(
-                text = if (state.isSubmitting) "Sending..." else "Send reset link",
+                text = if (state.isSubmitting) {
+                    stringResource(Res.string.auth_sending)
+                } else {
+                    stringResource(Res.string.auth_send_reset_link)
+                },
                 onClick = { onIntent(ForgotPasswordIntent.SubmitClicked) },
                 enabled = state.isSubmitEnabled,
                 modifier = Modifier.fillMaxWidth(),
@@ -128,7 +142,7 @@ private fun ForgotPasswordScreenContent(
             Spacer(Modifier.height(Spacing.md))
 
             TiikButton(
-                text = "Back to sign in",
+                text = stringResource(Res.string.auth_back_to_sign_in),
                 onClick = { onIntent(ForgotPasswordIntent.BackToSignInClicked) },
                 style = TiikButtonStyle.Ghost,
                 modifier = Modifier.fillMaxWidth(),

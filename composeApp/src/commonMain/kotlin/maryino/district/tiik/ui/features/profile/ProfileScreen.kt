@@ -13,8 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.components.*
 import maryino.district.tiik.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
 
 // ─────────────────────────────────────────────────────────────
 // Data model
@@ -69,17 +71,17 @@ fun ProfileScreen(
         ) {
             StatCell(
                 value = profile.activeBlocksCount.toString(),
-                label = "Blocks",
+                label = stringResource(Res.string.profile_blocks),
                 modifier = Modifier.weight(1f),
             )
             StatCell(
                 value = profile.friendsCount.toString(),
-                label = "Friends",
+                label = stringResource(Res.string.profile_friends),
                 modifier = Modifier.weight(1f),
             )
             StatCell(
                 value = profile.heldStrongCount.toString(),
-                label = "Held strong",
+                label = stringResource(Res.string.profile_held_strong),
                 modifier = Modifier.weight(1f),
             )
         }
@@ -99,7 +101,7 @@ fun ProfileScreen(
 
         // ── Account settings ──────────────────────────────────
         EyebrowText(
-            text = "Account",
+            text = stringResource(Res.string.profile_account),
             modifier = Modifier.padding(
                 start = Spacing.screenPadding,
                 bottom = Spacing.sm,
@@ -108,7 +110,7 @@ fun ProfileScreen(
 
         SettingsSection {
             SettingRow(
-                title = "Username",
+                title = stringResource(Res.string.profile_username),
                 subtitle = "@${profile.username}",
                 icon = { Text("👤", style = MaterialTheme.typography.bodySmall) },
                 onClick = onEditUsername,
@@ -116,7 +118,7 @@ fun ProfileScreen(
             TiikDivider(Modifier.padding(start = Spacing.x4l))
 
             SettingRow(
-                title = "Email",
+                title = stringResource(Res.string.common_email_label),
                 subtitle = profile.email,
                 icon = { Text("📧", style = MaterialTheme.typography.bodySmall) },
                 onClick = onEditEmail,
@@ -124,9 +126,13 @@ fun ProfileScreen(
             TiikDivider(Modifier.padding(start = Spacing.x4l))
 
             SettingRow(
-                title = "Notifications",
+                title = stringResource(Res.string.profile_notifications),
                 icon = { Text("🔔", style = MaterialTheme.typography.bodySmall) },
-                trailingValue = if (profile.notificationsEnabled) "On" else "Off",
+                trailingValue = if (profile.notificationsEnabled) {
+                    stringResource(Res.string.profile_on)
+                } else {
+                    stringResource(Res.string.profile_off)
+                },
                 showArrow = false,
                 onClick = onToggleNotifications,
             )
@@ -137,7 +143,7 @@ fun ProfileScreen(
         // ── Danger zone ───────────────────────────────────────
         SettingsSection {
             SettingRow(
-                title = "Sign out",
+                title = stringResource(Res.string.profile_sign_out),
                 icon = { Text("🚪", style = MaterialTheme.typography.bodySmall) },
                 titleColor = TiikColors.Danger,
                 showArrow = false,
@@ -149,7 +155,7 @@ fun ProfileScreen(
 
         // ── App version ───────────────────────────────────────
         Text(
-            text = "tiik v1.0.0",
+            text = stringResource(Res.string.profile_version),
             style = MaterialTheme.typography.bodySmall,
             color = TiikColors.Ink3,
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -254,12 +260,12 @@ private fun ProBanner(
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "tiik Pro",
+                text = stringResource(Res.string.profile_pro_title),
                 style = MaterialTheme.typography.titleSmall,
                 color = TiikColors.InkOnDark,
             )
             Text(
-                text = "Unlimited blocks + stats",
+                text = stringResource(Res.string.profile_pro_description),
                 style = MaterialTheme.typography.bodySmall,
                 color = TiikColors.InkOnDark.copy(alpha = 0.45f),
             )
@@ -272,7 +278,7 @@ private fun ProBanner(
             color = TiikColors.BgSurface,
         ) {
             Text(
-                text = "Upgrade",
+                text = stringResource(Res.string.profile_upgrade),
                 style = MaterialTheme.typography.labelSmall,
                 color = TiikColors.Ink,
                 modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.xs + 1.dp),

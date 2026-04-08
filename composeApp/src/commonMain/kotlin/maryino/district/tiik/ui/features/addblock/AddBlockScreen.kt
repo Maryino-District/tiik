@@ -14,8 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.components.*
 import maryino.district.tiik.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
 
 // ─────────────────────────────────────────────────────────────
 // Data models
@@ -117,13 +119,13 @@ private fun AddBlockTopBar(
         }
 
         Column(modifier = Modifier.weight(1f)) {
-            EyebrowText("New block · step ${step + 1}")
+            EyebrowText(stringResource(Res.string.add_block_step_title, step + 1))
             Spacer(Modifier.height(2.dp))
             Text(
                 text = when (step) {
-                    0 -> "Choose an app"
-                    1 -> "Pick a guardian"
-                    else -> "Confirm"
+                    0 -> stringResource(Res.string.add_block_choose_app)
+                    1 -> stringResource(Res.string.add_block_pick_guardian)
+                    else -> stringResource(Res.string.add_block_confirm)
                 },
                 style = MaterialTheme.typography.headlineSmall,
                 color = TiikColors.Ink,
@@ -164,7 +166,7 @@ private fun StepChooseApp(
         TiikTextField(
             value = searchQuery,
             onValueChange = onSearchChange,
-            placeholder = "Search apps…",
+            placeholder = stringResource(Res.string.add_block_search_apps),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = Spacing.screenPadding),
@@ -173,7 +175,7 @@ private fun StepChooseApp(
         Spacer(Modifier.height(Spacing.lg))
 
         EyebrowText(
-            text = "Installed · ${filtered.size}",
+            text = stringResource(Res.string.add_block_installed, filtered.size),
             modifier = Modifier.padding(
                 start = Spacing.screenPadding,
                 bottom = Spacing.sm,
@@ -229,7 +231,7 @@ private fun StepChooseApp(
         ) {
             if (selectedApp != null) {
                 Text(
-                    text = "1 app selected",
+                    text = stringResource(Res.string.add_block_selected_count),
                     style = MaterialTheme.typography.bodySmall,
                     color = TiikColors.Ink3,
                     modifier = Modifier
@@ -238,7 +240,7 @@ private fun StepChooseApp(
                 )
             }
             TiikButton(
-                text = "Next — pick guardian →",
+                text = stringResource(Res.string.add_block_next_pick_guardian),
                 onClick = onNext,
                 enabled = selectedApp != null,
                 modifier = Modifier.fillMaxWidth(),
@@ -260,7 +262,7 @@ private fun StepChooseGuardian(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EyebrowText(
-            text = "Friends · ${friends.size}",
+            text = stringResource(Res.string.add_block_friends, friends.size),
             modifier = Modifier.padding(
                 start = Spacing.screenPadding,
                 bottom = Spacing.sm,
@@ -326,7 +328,7 @@ private fun StepChooseGuardian(
         }
 
         TiikButton(
-            text = "Next — confirm →",
+            text = stringResource(Res.string.add_block_next_confirm),
             onClick = onNext,
             enabled = selectedGuardian != null,
             modifier = Modifier
@@ -353,7 +355,7 @@ private fun StepConfirm(
         verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         Text(
-            text = "You're about to block",
+            text = stringResource(Res.string.add_block_about_to_block),
             style = MaterialTheme.typography.bodyMedium,
             color = TiikColors.Ink3,
         )
@@ -367,7 +369,7 @@ private fun StepConfirm(
         }
 
         Text(
-            text = "Your guardian will be",
+            text = stringResource(Res.string.add_block_guardian_will_be),
             style = MaterialTheme.typography.bodyMedium,
             color = TiikColors.Ink3,
         )
@@ -384,7 +386,11 @@ private fun StepConfirm(
                 .padding(Spacing.md),
         ) {
             Text(
-                text = "Only @${guardian.username} can approve unlock requests for ${app.label}. They'll get a push notification when you ask.",
+                text = stringResource(
+                    Res.string.add_block_guardian_note,
+                    guardian.username,
+                    app.label,
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 color = TiikColors.Ink3,
             )
@@ -393,7 +399,7 @@ private fun StepConfirm(
         Spacer(Modifier.weight(1f))
 
         TiikButton(
-            text = "Lock ${app.label}",
+            text = stringResource(Res.string.add_block_lock_app, app.label),
             onClick = onConfirm,
             modifier = Modifier
                 .fillMaxWidth()

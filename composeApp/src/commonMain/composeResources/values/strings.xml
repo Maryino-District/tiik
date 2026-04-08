@@ -23,7 +23,9 @@
     <string name="auth_sending">Sending...</string>
     <string name="auth_send_reset_link">Send reset link</string>
     <string name="auth_forgot_password_email_required">Enter your email.</string>
-    <string name="auth_forgot_password_success">If an account with this email exists, we sent a reset link.</string>
+    <string name="auth_forgot_password_success">We sent a reset link to %1$s. Open the email, follow the link, then come back here and continue.</string>
+    <string name="auth_check_reset_email_status">I followed the email link</string>
+    <string name="auth_forgot_password_wait_for_email_confirmation">The reset link has not been confirmed yet. Check your email and wait a bit longer.</string>
     <string name="auth_verify_email">Verify email</string>
     <string name="auth_verify_email_body">We sent a verification link to %1$s. Open it to activate your account.</string>
     <string name="auth_verified_email">I've verified my email</string>
@@ -38,6 +40,8 @@
     <string name="auth_sign_up_password_required">Enter and confirm your password.</string>
     <string name="auth_sign_up_password_mismatch">Passwords do not match.</string>
     <string name="auth_sign_up_account_exists">This email is already registered. Reset your password instead.</string>
+    <string name="auth_create_new_password">Create new password</string>
+    <string name="auth_create_new_password_body">Set a new password for %1$s.</string>
     <string name="onboarding_setup_step">Setup · step %1$s of %2$s</string>
     <string name="onboarding_title">A few permissions
 to get started</string>

@@ -17,6 +17,7 @@ import maryino.district.tiik.ui.resources.UiText
 class ForgotPasswordViewModel(
     initialEmail: String,
     private val requestPasswordReset: suspend (String) -> Unit,
+    private val checkResetPasswordStatus: suspend (String) -> ForgotPasswordResetStatusResult,
     private val coroutineScopeOverride: CoroutineScope? = null,
 ) : ViewModel() {
 
@@ -41,6 +42,7 @@ class ForgotPasswordViewModel(
             }
 
             ForgotPasswordIntent.SubmitClicked -> submit()
+            ForgotPasswordIntent.ContinueClicked -> continueToPasswordReset()
             ForgotPasswordIntent.BackToSignInClicked -> emitEffect(ForgotPasswordEffect.BackToSignIn)
         }
     }
@@ -68,8 +70,44 @@ class ForgotPasswordViewModel(
             _uiState.update { currentState ->
                 currentState.copy(
                     isSubmitting = false,
-                    isSuccess = true,
+                    isResetEmailSent = true,
                 )
+            }
+        }
+    }
+
+    private fun continueToPasswordReset() {
+        val email = _uiState.value.email
+        if (email.isBlank() || !_uiState.value.isResetEmailSent) {
+            return
+        }
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                isCheckingResetStatus = true,
+                validationMessage = null,
+            )
+        }
+
+        coroutineScope.launch {
+            when (checkResetPasswordStatus(email)) {
+                ForgotPasswordResetStatusResult.AwaitingConfirmation -> {
+                    _uiState.update { currentState ->
+                        currentState.copy(isCheckingResetStatus = false)
+                    }
+                    emitEffect(
+                        ForgotPasswordEffect.ShowMessage(
+                            UiText.from(Res.string.auth_forgot_password_wait_for_email_confirmation),
+                        ),
+                    )
+                }
+
+                ForgotPasswordResetStatusResult.Confirmed -> {
+                    _uiState.update { currentState ->
+                        currentState.copy(isCheckingResetStatus = false)
+                    }
+                    emitEffect(ForgotPasswordEffect.NavigateToCreateNewPassword(email))
+                }
             }
         }
     }

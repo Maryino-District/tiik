@@ -32,6 +32,10 @@ data object ForgotPasswordDestination : TiikDestination {
     override val route = "forgot_password"
 }
 
+data object CreateNewPasswordDestination : TiikDestination {
+    override val route = "create_new_password"
+}
+
 data object BlocksDestination : TiikTopLevelDestination {
     override val route = "blocks"
     override val label = Res.string.nav_blocks
@@ -72,5 +76,6 @@ val routesWithoutNav = setOf(
     SignUpDestination.route,
     EmailVerificationDestination.route,
     ForgotPasswordDestination.route,
+    CreateNewPasswordDestination.route,
     AddBlockDestination.route,
 )

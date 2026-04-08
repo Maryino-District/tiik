@@ -1,8 +1,6 @@
 package maryino.district.tiik.ui.features.auth
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,62 +14,60 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.collectLatest
-import tiik.composeapp.generated.resources.*
 import maryino.district.tiik.ui.components.EyebrowText
 import maryino.district.tiik.ui.components.TiikButton
-import maryino.district.tiik.ui.components.TiikButtonStyle
-import maryino.district.tiik.ui.components.TiikTextField
-import maryino.district.tiik.ui.resources.UiText
 import maryino.district.tiik.ui.resources.asString
 import maryino.district.tiik.ui.theme.Spacing
 import maryino.district.tiik.ui.theme.TiikColors
 import maryino.district.tiik.ui.theme.TiikScreenPreview
 import org.jetbrains.compose.resources.stringResource
+import tiik.composeapp.generated.resources.Res
+import tiik.composeapp.generated.resources.auth_checking
+import tiik.composeapp.generated.resources.auth_create_new_password
+import tiik.composeapp.generated.resources.auth_create_new_password_body
 
 @Composable
-fun SignUpScreen(
-    onSignUp: (email: String, password: String) -> Unit,
+fun CreateNewPasswordScreen(
+    initialEmail: String,
+    onPasswordResetCompleted: () -> Unit,
     onBack: () -> Unit,
-    onForgotPassword: (email: String) -> Unit,
-    checkEmailAvailability: suspend (String) -> SignUpEmailCheckResult,
+    updatePassword: suspend (String, String) -> Unit,
     modifier: Modifier = Modifier,
-    isLoading: Boolean = false,
-    signUpViewModel: SignUpViewModel = viewModel {
-        SignUpViewModel(checkEmailAvailability = checkEmailAvailability)
+    createNewPasswordViewModel: CreateNewPasswordViewModel = viewModel {
+        CreateNewPasswordViewModel(
+            initialEmail = initialEmail,
+            updatePassword = updatePassword,
+        )
     },
 ) {
-    val state by signUpViewModel.uiState.collectAsStateWithLifecycle()
+    val state by createNewPasswordViewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(signUpViewModel, onSignUp, onForgotPassword) {
-        signUpViewModel.effects.collectLatest { effect ->
+    LaunchedEffect(createNewPasswordViewModel, onPasswordResetCompleted) {
+        createNewPasswordViewModel.effects.collectLatest { effect ->
             when (effect) {
-                is SignUpEffect.SignUp -> onSignUp(effect.email, effect.password)
-                is SignUpEffect.ForgotPassword -> onForgotPassword(effect.email)
+                CreateNewPasswordEffect.PasswordResetCompleted -> onPasswordResetCompleted()
             }
         }
     }
 
-    SignUpScreenContent(
+    CreateNewPasswordScreenContent(
         state = state,
-        onIntent = signUpViewModel::onIntent,
+        onIntent = createNewPasswordViewModel::onIntent,
         onBack = onBack,
         modifier = modifier,
-        isLoading = isLoading,
     )
 }
 
 @Composable
-private fun SignUpScreenContent(
-    state: SignUpState,
-    onIntent: (SignUpIntent) -> Unit,
+private fun CreateNewPasswordScreenContent(
+    state: CreateNewPasswordState,
+    onIntent: (CreateNewPasswordIntent) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    isLoading: Boolean = false,
 ) {
     Column(
         modifier = modifier
@@ -92,27 +88,26 @@ private fun SignUpScreenContent(
         Spacer(Modifier.height(Spacing.lg))
 
         EyebrowText(
-            text = stringResource(Res.string.auth_create_account),
+            text = stringResource(Res.string.auth_create_new_password),
             modifier = Modifier.align(Alignment.CenterHorizontally),
         )
 
         Spacer(Modifier.height(Spacing.xl))
 
-        TiikTextField(
-            value = state.email,
-            onValueChange = { onIntent(SignUpIntent.EmailChanged(it)) },
-            placeholder = stringResource(Res.string.common_email_placeholder),
-            label = stringResource(Res.string.common_email_label),
+        Text(
+            text = stringResource(Res.string.auth_create_new_password_body, state.email),
+            style = MaterialTheme.typography.bodyMedium,
+            color = TiikColors.Ink2,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        Spacer(Modifier.height(Spacing.sm))
+        Spacer(Modifier.height(Spacing.xl))
 
         AuthPasswordFields(
             password = state.password,
             repeatPassword = state.repeatPassword,
-            onPasswordChanged = { onIntent(SignUpIntent.PasswordChanged(it)) },
-            onRepeatPasswordChanged = { onIntent(SignUpIntent.RepeatPasswordChanged(it)) },
+            onPasswordChanged = { onIntent(CreateNewPasswordIntent.PasswordChanged(it)) },
+            onRepeatPasswordChanged = { onIntent(CreateNewPasswordIntent.RepeatPasswordChanged(it)) },
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -129,48 +124,29 @@ private fun SignUpScreenContent(
         Spacer(Modifier.height(Spacing.xl))
 
         TiikButton(
-            text = if (state.isCheckingEmail || isLoading) {
+            text = if (state.isSubmitting) {
                 stringResource(Res.string.auth_checking)
             } else {
-                stringResource(Res.string.auth_create_account)
+                stringResource(Res.string.auth_create_new_password)
             },
-            onClick = { onIntent(SignUpIntent.SubmitClicked) },
-            enabled = state.isSubmitEnabled && !isLoading,
+            onClick = { onIntent(CreateNewPasswordIntent.SubmitClicked) },
+            enabled = state.isSubmitEnabled,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        if (state.validationMessage == UiText.from(Res.string.auth_sign_up_account_exists)) {
-            Spacer(Modifier.height(Spacing.md))
-            Text(
-                text = stringResource(Res.string.auth_go_to_forgot_password),
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                color = TiikColors.Ink,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onIntent(SignUpIntent.ForgotPasswordClicked) },
-            )
-        }
-
         Spacer(Modifier.weight(1f))
-
-        Text(
-            text = stringResource(Res.string.auth_already_have_account),
-            style = MaterialTheme.typography.bodySmall,
-            color = TiikColors.Ink3,
-            modifier = Modifier.padding(bottom = Spacing.x3l),
-        )
     }
 }
 
 @Preview
 @Composable
-private fun SignUpScreenPreview() {
+private fun CreateNewPasswordScreenPreview() {
     TiikScreenPreview {
-        SignUpScreen(
-            onSignUp = { _, _ -> },
+        CreateNewPasswordScreen(
+            initialEmail = "user@example.com",
+            onPasswordResetCompleted = {},
             onBack = {},
-            onForgotPassword = {},
-            checkEmailAvailability = { SignUpEmailCheckResult.Available },
+            updatePassword = { _, _ -> },
         )
     }
 }

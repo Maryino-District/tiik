@@ -12,6 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,6 +26,7 @@ import maryino.district.tiik.ui.components.EyebrowText
 import maryino.district.tiik.ui.components.TiikButton
 import maryino.district.tiik.ui.components.TiikButtonStyle
 import maryino.district.tiik.ui.components.TiikTextField
+import maryino.district.tiik.ui.resources.UiText
 import maryino.district.tiik.ui.resources.asString
 import maryino.district.tiik.ui.theme.Spacing
 import maryino.district.tiik.ui.theme.TiikColors
@@ -33,22 +37,37 @@ import org.jetbrains.compose.resources.stringResource
 fun ForgotPasswordScreen(
     initialEmail: String,
     onBackToSignIn: () -> Unit,
+    onCreateNewPassword: (String) -> Unit,
+    onShowMessage: (String) -> Unit,
     requestPasswordReset: suspend (String) -> Unit,
+    checkResetPasswordStatus: suspend (String) -> ForgotPasswordResetStatusResult,
     modifier: Modifier = Modifier,
     forgotPasswordViewModel: ForgotPasswordViewModel = viewModel {
         ForgotPasswordViewModel(
             initialEmail = initialEmail,
             requestPasswordReset = requestPasswordReset,
+            checkResetPasswordStatus = checkResetPasswordStatus,
         )
     },
 ) {
     val state by forgotPasswordViewModel.uiState.collectAsStateWithLifecycle()
+    var pendingMessage by remember { mutableStateOf<UiText?>(null) }
+    val pendingMessageText = pendingMessage?.asString()
 
-    LaunchedEffect(forgotPasswordViewModel, onBackToSignIn) {
+    LaunchedEffect(forgotPasswordViewModel, onBackToSignIn, onCreateNewPassword, onShowMessage) {
         forgotPasswordViewModel.effects.collectLatest { effect ->
             when (effect) {
                 ForgotPasswordEffect.BackToSignIn -> onBackToSignIn()
+                is ForgotPasswordEffect.NavigateToCreateNewPassword -> onCreateNewPassword(effect.email)
+                is ForgotPasswordEffect.ShowMessage -> pendingMessage = effect.message
             }
+        }
+    }
+
+    LaunchedEffect(pendingMessageText, onShowMessage) {
+        pendingMessageText?.let { message ->
+            onShowMessage(message)
+            pendingMessage = null
         }
     }
 
@@ -92,9 +111,9 @@ private fun ForgotPasswordScreenContent(
 
         Spacer(Modifier.height(Spacing.xl))
 
-        if (state.isSuccess) {
+        if (state.isResetEmailSent) {
             Text(
-                text = stringResource(Res.string.auth_forgot_password_success),
+                text = stringResource(Res.string.auth_forgot_password_success, state.email),
                 style = MaterialTheme.typography.bodyMedium,
                 color = TiikColors.Ink2,
                 modifier = Modifier.fillMaxWidth(),
@@ -103,8 +122,22 @@ private fun ForgotPasswordScreenContent(
             Spacer(Modifier.height(Spacing.xl))
 
             TiikButton(
+                text = if (state.isCheckingResetStatus) {
+                    stringResource(Res.string.auth_checking)
+                } else {
+                    stringResource(Res.string.auth_check_reset_email_status)
+                },
+                onClick = { onIntent(ForgotPasswordIntent.ContinueClicked) },
+                enabled = state.isContinueEnabled,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            Spacer(Modifier.height(Spacing.md))
+
+            TiikButton(
                 text = stringResource(Res.string.auth_back_to_sign_in),
                 onClick = { onIntent(ForgotPasswordIntent.BackToSignInClicked) },
+                style = TiikButtonStyle.Ghost,
                 modifier = Modifier.fillMaxWidth(),
             )
         } else {
@@ -160,7 +193,10 @@ private fun ForgotPasswordScreenPreview() {
         ForgotPasswordScreen(
             initialEmail = "user@example.com",
             onBackToSignIn = {},
+            onCreateNewPassword = {},
+            onShowMessage = {},
             requestPasswordReset = {},
+            checkResetPasswordStatus = { ForgotPasswordResetStatusResult.AwaitingConfirmation },
         )
     }
 }

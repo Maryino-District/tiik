@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
+    alias(libs.plugins.kotlinSerialization)
     application
 }
 
@@ -21,9 +22,11 @@ dependencies {
     // хэшируем пароли
     implementation(libs.mindrot.jbcrypt)
     implementation(libs.ktor.server.status.pages)
-    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.server.content.negotiation)
+// ✅ Серверная
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.auth.jwt)
+    implementation(libs.ktor.serialization.kotlinx.json)
     // orm
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
@@ -35,6 +38,8 @@ dependencies {
     implementation(libs.logback)
     implementation(libs.ktor.serverCore)
     implementation(libs.ktor.serverNetty)
+    implementation(libs.ktor.server.rate.limit)
+    implementation(libs.firebase.inappmessaging.ktx)
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)
 }

@@ -1,4 +1,4 @@
-package maryino.district.tiik
+package maryino.district.tiik.db
 
 import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.datetime.CurrentTimestamp

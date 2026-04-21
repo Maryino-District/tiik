@@ -1,4 +1,4 @@
-package maryino.district.tiik
+package maryino.district.tiik.protections
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -6,8 +6,9 @@ import java.util.Date
 
 object JwtService {
 
-    lateinit var secret: String
-    lateinit var issuer: String
+    var secret: String = System.getenv("JWT_SECRET") ?: "dev-secret"
+
+    var issuer: String = "my-mobile-app"
 
     private val algorithm = Algorithm.HMAC256(secret)
     

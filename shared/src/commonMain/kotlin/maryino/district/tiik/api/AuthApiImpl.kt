@@ -5,10 +5,11 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-import maryino.district.tiik.models.ApiError
+import maryino.district.tiik.models.ErrorResponse
 import maryino.district.tiik.models.AuthResponse
 import maryino.district.tiik.models.LoginRequest
 import maryino.district.tiik.models.RegisterRequest
@@ -37,7 +38,8 @@ class AuthApiImpl(
                 val authResponse = response.body<AuthResponse>()
                 Result.Success(authResponse)
             } else {
-                val error = response.body<ApiError>()
+                println("Error crab ${response.status.value}: ${response.bodyAsText()}")
+                val error = response.body<ErrorResponse>()
                 Result.Error(error.message, error.code)
             }
         } catch (e: Exception) {
@@ -56,7 +58,7 @@ class AuthApiImpl(
                 val authResponse = response.body<AuthResponse>()
                 Result.Success(authResponse)
             } else {
-                val error = response.body<ApiError>()
+                val error = response.body<ErrorResponse>()
                 Result.Error(error.message, error.code)
             }
         } catch (e: Exception) {

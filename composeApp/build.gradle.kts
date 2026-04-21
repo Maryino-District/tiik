@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -5,6 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+
 }
 
 kotlin {
@@ -28,6 +30,13 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+            implementation("io.ktor:ktor-client-content-negotiation:3.4.2")
+            implementation("io.ktor:ktor-serialization-kotlinx-json:3.4.2")
+
+            // ✅ Плагины, которые могут быть нужны
+            implementation("io.ktor:ktor-client-logging:3.4.2")
+            implementation("io.ktor:ktor-client-json:2.3.12")
+            implementation("io.ktor:ktor-client-android:3.4.2")
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -40,6 +49,13 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.navigation.compose)
             implementation(projects.shared)
+
+            implementation(libs.ktor.server.status.pages)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.ktor.client.core)
+            implementation(libs.ktor.serialization.kotlinx.json)
+
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

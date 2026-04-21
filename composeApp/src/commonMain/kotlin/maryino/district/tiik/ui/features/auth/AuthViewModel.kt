@@ -1,6 +1,8 @@
 package maryino.district.tiik.ui.features.auth
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import io.ktor.util.logging.Logger
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,6 +10,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import maryino.district.tiik.api.AuthApiImpl
+import maryino.district.tiik.models.RegisterRequest
 
 class AuthViewModel : ViewModel() {
 
@@ -42,7 +47,17 @@ class AuthViewModel : ViewModel() {
         if (!currentState.isSubmitEnabled) {
             return
         }
-
+        val authImpl = AuthApiImpl("http://10.0.2.2:8080",)
+        viewModelScope.launch {
+            // Используем 10.0.2.2 для эмулятора или реальный IP для устройства
+            val response = authImpl.register(
+                RegisterRequest(
+                    email = currentState.email,
+                    password = currentState.password,
+                )
+            )
+            println("crab response = ${response}")
+        }
         emitEffect(
             AuthEffect.SignIn(
                 email = currentState.email,

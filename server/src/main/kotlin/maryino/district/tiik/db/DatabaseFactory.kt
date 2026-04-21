@@ -1,4 +1,4 @@
-package maryino.district.tiik
+package maryino.district.tiik.db
 
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils

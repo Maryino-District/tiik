@@ -2,15 +2,23 @@ package maryino.district.tiik
 
 import io.ktor.server.application.*
 import io.ktor.server.auth.Authentication
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
-import io.ktor.server.auth.principal
 import io.ktor.server.engine.*
-import io.ktor.server.http.content.staticResources
 import io.ktor.server.netty.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.ratelimit.RateLimit
+import io.ktor.server.plugins.ratelimit.RateLimitName
+import io.ktor.server.plugins.ratelimit.rateLimit
+import maryino.district.tiik.db.DatabaseFactory
+import maryino.district.tiik.protections.JwtService
+import maryino.district.tiik.protections.rateLimits
+import maryino.district.tiik.routes.authRoutes
+import maryino.district.tiik.routes.profileRoutes
+
 
 fun main() {
     embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
@@ -18,11 +26,12 @@ fun main() {
 }
 
 fun Application.module() {
-    val jwtService = JwtService.apply {
-        secret = System.getenv("JWT_SECRET") ?: "dev-secret"
-        issuer = "my-mobile-app"
-    }
+    DatabaseFactory.init()
+    val jwtService = JwtService
 
+    install(ContentNegotiation) {
+        json()
+    }
 
     install(Authentication) {
         jwt("auth-jwt") {
@@ -35,29 +44,17 @@ fun Application.module() {
         }
     }
 
+    install(RateLimit) {
+        rateLimits()
+    }
+
     routing {
-
-        staticResources("/a", "", "sample.html")
-
-        get("/") {
-            staticResources("/", "", "sample.html")
-            call.respondText("Ktor: ${Greeting().greet()}")
-        }
-
-        get("/user") {
-            call.respondText {
-                "hi!"
+        rateLimit(RateLimitName("global")) {
+            get("/") {
+                call.respondText("Ktor: ${Greeting().greet()}")
             }
-        }
-
-        authenticate("auth-jwt") {
-            get("/profile") {
-                val principal = call.principal<JWTPrincipal>()!!
-                call.respond(mapOf(
-                    "userId" to principal.payload.subject,
-                    "email" to principal.payload.getClaim("email").asString()
-                ))
-            }
+            authRoutes()
+            profileRoutes()
         }
     }
 }
